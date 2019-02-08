@@ -45,15 +45,20 @@ chooseportold() {
   fi
 }
 
-if keytest; then
-  VKSEL=chooseport
-else
-  VKSEL=chooseportold
-  ui_print "  ! Legacy device detected! Using old keycheck method"
-  ui_print " "
-  ui_print "- Vol Key Programming -"
-  ui_print "  Press Vol Up Again:"
-  $VKSEL "UP"
-  ui_print "  Press Vol Down"
-  $VKSEL "DOWN"
-fi
+# Have user option to skip vol keys
+OIFS=$IFS; IFS=\|; MID=false; NEW=false
+case $(echo $(basename $ZIPFILE) | tr '[:upper:]' '[:lower:]') in
+  *novk*) ui_print "- Skipping Vol Keys -";;
+  *) if keytest; then
+       VKSEL=chooseport
+     else
+       VKSEL=chooseportold
+       ui_print "  ! Legacy device detected! Using old keycheck method"
+       ui_print " "
+       ui_print "- Vol Key Programming -"
+       ui_print "  Press Vol Up Again:"
+       $VKSEL "UP"
+       ui_print "  Press Vol Down"
+       $VKSEL "DOWN"
+     fi;;
+esac
